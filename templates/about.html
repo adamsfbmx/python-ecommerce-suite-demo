@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store</a>
+            <div class="nav-icons"><a href="/">← Back to Store</a></div>
+        </div>
+    </header>
+    <main class="container" style="max-width: 800px;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 2rem; font-family: 'Playfair Display', serif;">About Us</h2>
+        <div class="form-container" style="max-width: 100%; padding: 3rem;">
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-muted);">
+                Welcome to <strong>Store</strong>, your premier destination for high-quality fashion.
+                We are dedicated to providing our customers with the latest trends in clothing,
+                carefully curated to ensure comfort, style, and durability.
+            </p>
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-muted); margin-top: 1.5rem;">
+                Our mission is to make fashion accessible to everyone, offering a seamless online
+                shopping experience with secure payment methods and fast delivery.
+                Thank you for choosing us!
+            </p>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store Admin</a>
+            <div class="nav-icons">
+                <a href="/admin"><i class="fa-solid fa-plus"></i> Add Product</a>
+                <a href="/admin/categories"><i class="fa-solid fa-tags"></i> Categories</a>
+                <a href="/admin/orders"><i class="fa-solid fa-box"></i> Orders</a>
+                <a href="/admin/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a>
+                <a href="/admin/settings" style="color:var(--primary);"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="/logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </div>
+    </header>
+    <main class="container" style="max-width: 700px;">
+        <h2 style="margin-bottom: 2rem;">Store Settings</h2>
+        <form id="settingsForm" class="form-container" style="max-width: 100%;">
+            
+            <h3 style="margin: 0 0 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Payment Gateway</h3>
+            <div class="form-group">
+                <label>Active Gateway</label>
+                <select id="gateway" class="form-control">
+                    <option value="none" {% if settings.active_gateway == 'none' %}selected{% endif %}>None (Cash on Delivery only)</option>
+                    <option value="stripe" {% if settings.active_gateway == 'stripe' %}selected{% endif %}>Stripe (Credit Card)</option>
+                    <option value="paypal" {% if settings.active_gateway == 'paypal' %}selected{% endif %}>PayPal</option>
+                </select>
+            </div>
+            <h4 style="margin: 1rem 0 0.5rem;">Stripe Credentials</h4>
+            <div class="form-group"><label>Publishable Key</label><input type="text" id="stripe_pub" class="form-control" value="{{ settings.stripe_publishable_key or '' }}" placeholder="pk_live_..."></div>
+            <div class="form-group"><label>Secret Key</label><input type="password" id="stripe_sec" class="form-control" value="{{ settings.stripe_secret_key or '' }}" placeholder="sk_live_..."></div>
+            <h4 style="margin: 1rem 0 0.5rem;">PayPal Credentials</h4>
+            <div class="form-group"><label>Client ID</label><input type="text" id="paypal_id" class="form-control" value="{{ settings.paypal_client_id or '' }}"></div>
+            <div class="form-group"><label>Secret</label><input type="password" id="paypal_sec" class="form-control" value="{{ settings.paypal_secret or '' }}"></div>
+            
+            <h3 style="margin: 2rem 0 1rem; border-bottom: 1px solid #eee; padding-bottom: 0.5rem;">Email Configuration (SMTP)</h3>
+            <div class="form-group" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                <div><label>SMTP Server</label><input type="text" id="smtp_server" class="form-control" value="{{ settings.smtp_server or 'smtp.gmail.com' }}"></div>
+                <div><label>Port</label><input type="number" id="smtp_port" class="form-control" value="{{ settings.smtp_port or 587 }}"></div>
+            </div>
+            <div class="form-group"><label>Email (Username)</label><input type="email" id="smtp_user" class="form-control" value="{{ settings.smtp_username or '' }}" placeholder="store@gmail.com"></div>
+            <div class="form-group"><label>App Password</label><input type="password" id="smtp_pass" class="form-control" value="{{ settings.smtp_password or '' }}" placeholder="xxxx xxxx xxxx xxxx"></div>
+            <button type="submit" class="btn" style="margin-top: 1rem;">Save Settings</button>
+        </form>
+        <p id="msg" style="text-align:center; color:green; margin-top:1rem;"></p>
+    </main>
+    <script>
+        document.getElementById('settingsForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const data = {
+                gateway: document.getElementById('gateway').value,
+                stripe_pub: document.getElementById('stripe_pub').value,
+                stripe_sec: document.getElementById('stripe_sec').value,
+                paypal_id: document.getElementById('paypal_id').value,
+                paypal_sec: document.getElementById('paypal_sec').value,
+                smtp_server: document.getElementById('smtp_server').value,
+                smtp_port: document.getElementById('smtp_port').value,
+                smtp_user: document.getElementById('smtp_user').value,
+                smtp_pass: document.getElementById('smtp_pass').value,
+            };
+            const res = await fetch('/api/settings/save', {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data)
+            });
+            if(res.ok) { document.getElementById('msg').innerText = "Settings saved!"; setTimeout(() => document.getElementById('msg').innerText = "", 3000); }
+            else { alert("Error saving settings"); }
+        };
+    </script>
+<script>
+        // Evita que el botón "Atrás" del navegador muestre el panel de admin cacheado
+        window.history.pushState(null, "", window.location.href);        
+        window.onpopstate = function() {
+            window.location.href = '/logout'; // Si le da atrás, lo desloguea
+        };
+    </script>
+</body>
+</html>

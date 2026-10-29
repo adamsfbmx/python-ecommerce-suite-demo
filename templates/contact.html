@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us - Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store</a>
+            <div class="nav-icons"><a href="/">← Back to Store</a></div>
+        </div>
+    </header>
+    <main class="container" style="max-width: 800px;">
+        <h2 style="font-size: 2.5rem; margin-bottom: 2rem; font-family: 'Playfair Display', serif;">Contact Us</h2>
+        <div class="form-container" style="max-width: 100%; padding: 3rem;">
+            <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-muted);">
+                We'd love to hear from you! If you have any questions, concerns, or feedback,
+                please reach out to us using the information below:
+            </p>
+            <ul style="list-style: none; padding: 0; margin-top: 2rem; font-size: 1.1rem; line-height: 2;">
+                <li><i class="fa-solid fa-envelope" style="color: var(--accent); margin-right: 10px;"></i> Email: <a href="mailto:info@store.com" style="color: var(--accent);">info@store.com</a></li>
+                <li><i class="fa-solid fa-phone" style="color: var(--accent); margin-right: 10px;"></i> Phone: +1 (555) 000-0000</li>
+                <li><i class="fa-solid fa-location-dot" style="color: var(--accent); margin-right: 10px;"></i> Address: 123 Fashion St, Style City, Country</li>
+            </ul>
+        </div>
+    </main>
+    {% include 'footer.html' %}
+</body>
+</html>

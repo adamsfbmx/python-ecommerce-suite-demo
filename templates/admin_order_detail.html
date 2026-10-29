@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order #{{ order.id }} - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store Admin</a>
+            <div class="nav-icons">
+                <a href="/admin"><i class="fa-solid fa-plus"></i> Add Product</a>
+                <a href="/admin/categories"><i class="fa-solid fa-tags"></i> Categories</a>
+                <a href="/admin/orders" style="color:var(--primary);"><i class="fa-solid fa-box"></i> Orders</a>
+                <a href="/admin/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a>
+                <a href="/admin/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="/logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </div>
+    </header>
+    <main class="container" style="display:grid; grid-template-columns: 2fr 1fr; gap:2rem;">
+        <div>
+            <div class="table-container">
+                <h3 style="margin-bottom: 1rem;">Order Items</h3>
+                <table>
+                    <thead><tr><th>Product</th><th>Details</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td style="font-weight: 600;">{{ item.name }}</td>
+                            <td style="color: var(--text-muted); font-size: 0.85rem;">Size: {{ item.product_size }} | Color: {{ item.product_color }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ item.unit_price }}</td>
+                            <td style="font-weight: 600;">${{ item.quantity * item.unit_price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div style="text-align:right; margin-top:2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                    <h3 style="font-size:1.5rem;">Order Total: ${{ order.total }}</h3>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="form-container" style="margin: 0; max-width: 100%; padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1.5rem;">Customer Details</h3>
+                <p><strong>Name:</strong> {{ order.customer_name }}</p>
+                <p><strong>Phone:</strong> {{ order.customer_phone }}</p>
+                <p><strong>Country:</strong> {{ order.country }}</p>
+                <p><strong>Address:</strong> {{ order.customer_address }}</p>
+                <p><strong>Payment:</strong> {{ order.payment_method.replace('_', ' ') }}</p>
+            </div>
+            <div class="form-container" style="margin: 0; max-width: 100%; padding: 2rem;">
+                <h3 style="margin-bottom: 1.5rem;">Order Status</h3>
+                <select id="statusSelect" class="form-control" style="margin-bottom: 1rem;">
+                    <option value="New" {% if order.status == 'New' %}selected{% endif %}>New</option>
+                    <option value="Paid" {% if order.status == 'Paid' %}selected{% endif %}>Paid</option>
+                    <option value="Pending Payment" {% if order.status == 'Pending Payment' %}selected{% endif %}>Pending Payment</option>
+                    <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button onclick="updateStatus({{ order.id }})" class="btn">Update Status</button>
+                <p id="statusMsg" style="text-align:center; color:#10b981; margin-top:1rem; display:none;">Status updated!</p>
+            </div>
+        </div>
+    </main>
+    <script>
+        async function updateStatus(id) { 
+            const status = document.getElementById('statusSelect').value; 
+            const res = await fetch(`/api/orders/${id}/status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: status }) }); 
+            if (res.ok) { const msg = document.getElementById('statusMsg'); msg.style.display = 'block'; setTimeout(() => msg.style.display = 'none', 2000); } 
+        }
+    </script>
+<script>
+        // Evita que el botón "Atrás" del navegador muestre el panel de admin cacheado
+        window.history.pushState(null, "", window.location.href);        
+        window.onpopstate = function() {
+            window.location.href = '/logout'; // Si le da atrás, lo desloguea
+        };
+    </script>
+</body>
+</html>

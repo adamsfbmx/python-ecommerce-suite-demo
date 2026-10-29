@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customers - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store Admin</a>
+            <div class="nav-icons">
+                <a href="/admin"><i class="fa-solid fa-plus"></i> Add Product</a>
+                <a href="/admin/categories"><i class="fa-solid fa-tags"></i> Categories</a>
+                <a href="/admin/orders"><i class="fa-solid fa-box"></i> Orders</a>
+                <a href="/admin/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/customers" style="color:var(--primary);"><i class="fa-solid fa-users"></i> Customers</a>
+                <a href="/admin/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="/logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <h2 style="margin-bottom: 2rem;">Registered Customers</h2>
+        {% if customers %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Registration Date</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in customers %}
+                    <tr id="customer-{{ c.id }}">
+                        <td style="font-weight: 700;">#{{ c.id }}</td>
+                        <td style="font-weight: 600;">{{ c.name }}</td>
+                        <td>{{ c.email }}</td>
+                        <td>{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td style="text-align: right;">
+                            <button onclick="deleteCustomer({{ c.id }})" class="btn btn-outline" style="width: auto; padding: 6px 12px; color: #ef4444; border-color: #fecaca;">
+                                <i class="fa-solid fa-trash-can"></i> Delete
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="text-align:center; color: var(--text-muted); margin-top: 4rem;">No customers registered yet.</p>
+        {% endif %}
+    </main>
+    <script>
+        async function deleteCustomer(id) {
+            if(!confirm("Are you sure you want to delete this customer? Their past orders will remain in the system.")) return;
+            
+            const res = await fetch(`/api/customers/delete/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                // Animación para eliminar la fila visualmente
+                const row = document.getElementById(`customer-${id}`);
+                row.style.opacity = '0';
+                setTimeout(() => row.remove(), 300);
+            } else {
+                alert("Error deleting customer.");
+            }
+        }
+    </script>
+    <script>
+        // Evita que el botón "Atrás" del navegador muestre el panel de admin cacheado
+        window.history.pushState(null, "", window.location.href);        
+        window.onpopstate = function() {
+            window.location.href = '/logout';
+        };
+    </script>
+</body>
+</html>

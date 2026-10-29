@@ -1,0 +1,6 @@
+Flask==3.0.0
+psycopg2-binary==2.9.9
+Werkzeug==3.0.1
+stripe==7.10.0
+paypalrestsdk==1.13.3
+Flask-Mail==0.9.1

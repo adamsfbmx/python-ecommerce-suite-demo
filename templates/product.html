@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }} - Store</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .thumbnail-container { display: flex; gap: 10px; margin-top: 10px; }
+        .thumbnail { width: 80px; height: 80px; object-fit: cover; cursor: pointer; border: 2px solid transparent; }
+        .thumbnail:hover { border-color: var(--accent); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">← Back to Store</a>
+            <div class="nav-icons"><a href="/cart"><i class="fa-solid fa-cart-shopping"></i> Cart</a></div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="product-detail">
+            <div style="width: 50%;">
+                <img id="mainImage" src="{{ url_for('static', filename='uploads/' + (product.image or 'no_image.jpg')) }}" style="width: 100%; height: 600px; object-fit: cover; background: var(--bg-light);">
+                {% if gallery %}
+                <div class="thumbnail-container">
+                    {% for img in gallery %}
+                    <img src="{{ url_for('static', filename='uploads/' + img.image_path) }}" class="thumbnail" onclick="document.getElementById('mainImage').src=this.src">
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="product-detail-info">
+                <h2>{{ product.name }}</h2>
+                <div class="stars">
+                    {% set avg = product.average_rating if product.average_rating else 0 %}
+                    {% for i in range(1, 6) %}
+                        {% if i <= avg %}<i class="fa-solid fa-star"></i>{% else %}<i class="fa-regular fa-star"></i>{% endif %}
+                    {% endfor %} ({{ "%.1f"|format(avg) }})
+                </div>
+                <div class="price-tag">${{ product.price }}</div>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">{{ product.description }}</p>
+                
+                <form action="/cart/add/0" method="POST" id="addToCartForm">
+                    <div class="form-group">
+                        <label>Select Size & Color</label>
+                        <select name="variant_id" id="variantSelect" class="form-control" required onchange="updateStockStatus()">
+                            <option value="">Choose an option...</option>
+                            {% for v in variants %}
+                            <option value="{{ v.id }}" data-stock="{{ v.stock }}" {% if v.stock == 0 %}disabled{% endif %}>
+                                {{ v.size }} - {{ v.color }} {% if v.stock == 0 %}(Out of Stock){% else %}({{ v.stock }} left){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn" id="addToCartBtn" style="font-size: 1.1rem; padding: 16px;" disabled>Select an Option</button>
+                </form>
+            </div>
+        </div>
+
+        <div style="margin-top: 4rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Customer Reviews</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div>
+                    {% for r in reviews %}
+                    <div style="border-bottom: 1px solid var(--border); padding: 1rem 0;">
+                        <strong>{{ r.customer_name }}</strong> 
+                        <span style="color: #fbbf24;">{% for i in range(r.rating) %}<i class="fa-solid fa-star"></i>{% endfor %}</span>
+                        
+                        {% if r.is_verified %}
+                        <span style="background: #dcfce7; color: #166534; font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; margin-left: 10px; font-weight: 600;">
+                            <i class="fa-solid fa-check-circle"></i> Verified Purchase
+                        </span>
+                        {% endif %}
+                        
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">{{ r.comment }}</p>
+                    </div>
+                    {% else %}
+                    <p>No reviews yet.</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    <form action="/product/{{ product.id }}/review" method="POST" class="form-container" style="margin: 0;">
+                        <div class="form-group"><label>Name</label><input type="text" name="name" class="form-control" required></div>
+                        <div class="form-group"><label>Rating</label><select name="rating" class="form-control"><option value="5">5 Stars</option><option value="4">4 Stars</option><option value="3">3 Stars</option><option value="2">2 Stars</option><option value="1">1 Star</option></select></div>
+                        <div class="form-group"><label>Comment</label><textarea name="comment" class="form-control" required></textarea></div>
+                        <button type="submit" class="btn">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if related_products %}
+        <div style="margin-top: 4rem;">
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">You may also like</h3>
+            <div class="product-grid">
+                {% for rel in related_products %}
+                <div class="product-card">
+                    {% if rel.image and rel.image != 'no_image.jpg' %}
+                        <img src="{{ url_for('static', filename='uploads/' + rel.image) }}" class="product-image" alt="{{ rel.name }}">
+                    {% else %}
+                        <div class="product-image" style="display:flex;align-items:center;justify-content:center;color:#ccc;">
+                            <i class="fa-regular fa-image fa-3x"></i>
+                        </div>
+                    {% endif %}
+                    <div class="product-info">
+                        <div class="product-title">{{ rel.name }}</div>
+                        <div class="product-price">${{ rel.price }}</div>
+                        <a href="/product/{{ rel.id }}" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </main>
+    {% include 'footer.html' %}
+    <script>
+        function updateStockStatus() {
+            const select = document.getElementById('variantSelect');
+            const btn = document.getElementById('addToCartBtn');
+            const form = document.getElementById('addToCartForm');
+            
+            if (select.value) {
+                form.action = `/cart/add/${select.value}`;
+                btn.disabled = false;
+                btn.innerText = "Add to Cart";
+            } else {
+                btn.disabled = true;
+                btn.innerText = "Select an Option";
+            }
+        }
+    </script>
+</body>
+</html>

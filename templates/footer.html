@@ -1,0 +1,55 @@
+<footer>
+    <div class="footer-grid">
+        <div class="footer-col">
+            <a href="/" class="logo" style="margin-bottom: 1rem; display: inline-block;">Store.</a>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem; line-height: 1.6;">
+                {{ t.footer_description }}
+            </p>
+            <div class="footer-social">
+                <a href="javascript:void(0);"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="javascript:void(0);"><i class="fa-brands fa-instagram"></i></a>
+                <a href="javascript:void(0);"><i class="fa-brands fa-twitter"></i></a>
+                <a href="javascript:void(0);"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+            <div style="margin-top: 1.5rem;">
+                <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">{{ t.language }}:</label>
+                <select onchange="window.location.href='/set-lang/' + this.value" style="padding: 8px; border-radius: 4px; border: 1px solid var(--border); font-size: 0.9rem;">
+                    <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
+                    <option value="es" {% if lang == 'es' %}selected{% endif %}>Español</option>
+                    <option value="fr" {% if lang == 'fr' %}selected{% endif %}>Français</option>
+                    <option value="it" {% if lang == 'it' %}selected{% endif %}>Italiano</option>
+                </select>
+            </div>
+        </div>
+        <div class="footer-col">
+            <h4>{{ t.shop }}</h4>
+            <ul>
+                <li><a href="/?gender=Men">{{ t.men_collection }}</a></li>
+                <li><a href="/?gender=Women">{{ t.women_collection }}</a></li>
+                <li><a href="/?gender=Kids">{{ t.kids_collection }}</a></li>
+                <li><a href="javascript:void(0);">{{ t.new_arrivals }}</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>{{ t.customer_service }}</h4>
+            <ul>
+                <li><a href="/contact">{{ t.contact_us }}</a></li>
+                <li><a href="javascript:void(0);">{{ t.shipping_returns }}</a></li>
+                <li><a href="javascript:void(0);">{{ t.size_guide }}</a></li>
+                <li><a href="javascript:void(0);">{{ t.faq }}</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>{{ t.information }}</h4>
+            <ul>
+                <li><a href="/about">{{ t.about_us }}</a></li>
+                <li><a href="javascript:void(0);">{{ t.privacy_policy }}</a></li>
+                <li><a href="javascript:void(0);">{{ t.terms_conditions }}</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 Store. {{ t.all_rights_reserved }}</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">{{ t.designed_with }} <i class="fa-solid fa-heart" style="color: #ef4444;"></i> {{ t.for_fashion_lovers }}</p>
+    </div>
+</footer>

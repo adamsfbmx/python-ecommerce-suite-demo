@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Categories - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* 1. Anulamos el min-width: 800px del styles.css global solo para esta tabla */
+        .tabla-categorias table {
+            min-width: 100% !important; 
+            width: 100% !important;
+            table-layout: fixed !important;
+            border-collapse: collapse;
+        }
+
+        .tabla-categorias {
+            width: 100%;
+            overflow-x: hidden; /* Elimina la barra de scroll */
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            margin-top: 2rem;
+        }
+
+        .tabla-categorias th, 
+        .tabla-categorias td {
+            padding: 1rem !important;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle !important;
+            white-space: normal !important;
+        }
+
+        /* 2. Estilos finos para los botones de acción */
+        .action-buttons {
+            display: flex !important;
+            gap: 8px !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+        }
+
+        .btn-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 34px !important;
+            height: 34px !important;
+            border-radius: 6px;
+            text-decoration: none !important;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+            padding: 0 !important;
+            box-sizing: border-box !important;
+            font-size: 0.9rem !important;
+        }
+
+        .btn-icon.edit {
+            background: #eff6ff !important;
+            color: #2563eb !important;
+            border-color: #bfdbfe !important;
+        }
+        .btn-icon.edit:hover {
+            background: #2563eb !important;
+            color: #ffffff !important;
+        }
+
+        .btn-icon.delete {
+            background: #fef2f2 !important;
+            color: #dc2626 !important;
+            border-color: #fecaca !important;
+        }
+        .btn-icon.delete:hover {
+            background: #dc2626 !important;
+            color: #ffffff !important;
+        }
+
+        /* 3. Formulario compacto */
+        .add-form {
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            max-width: 100%;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store Admin</a>
+            <div class="nav-icons">
+                <a href="/admin"><i class="fa-solid fa-plus"></i> Add Product</a>
+                <a href="/admin/categories" style="color:var(--primary);"><i class="fa-solid fa-tags"></i> Categories</a>
+                <a href="/admin/orders"><i class="fa-solid fa-box"></i> Orders</a>
+                <a href="/admin/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a>
+                <a href="/admin/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="/logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </div>
+    </header>
+    <main class="container" style="max-width: 800px;">
+        <h2 style="margin-bottom: 2rem;">Manage Categories</h2>
+        
+        <!-- Formulario para añadir categoría -->
+        <div class="add-form">
+            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                <label><i class="fa-solid fa-folder-plus"></i> New Category Name</label>
+                <input type="text" id="newCategory" class="form-control" placeholder="e.g., T-Shirts, Jeans...">
+            </div>
+            <button onclick="addCategory()" class="btn" style="width: auto; padding: 14px 24px; height: 48px;">
+                <i class="fa-solid fa-plus"></i> Add
+            </button>
+        </div>
+
+        <!-- Tabla de categorías -->
+        <div class="tabla-categorias">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 60px;">ID</th>
+                        <th>Category Name</th>
+                        <th style="width: 100px; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="categoryList">
+                    {% for cat in categories %}
+                    <tr id="cat-{{ cat.id }}">
+                        <td style="color:var(--text-muted); font-weight: 600;">#{{ cat.id }}</td>
+                        <td style="overflow: hidden; text-overflow: ellipsis;">
+                            <i class="fa-solid fa-tag" style="color: var(--primary); margin-right: 8px;"></i> 
+                            <strong>{{ cat.name }}</strong>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/admin/category/edit/{{ cat.id }}" class="btn-icon edit" title="Edit Category">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a href="javascript:void(0);" onclick="deleteCategory({{ cat.id }})" class="btn-icon delete" title="Delete Category">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center; color: var(--text-muted); padding: 3rem 0;">
+                            <i class="fa-solid fa-folder-open fa-3x" style="margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No categories found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        async function addCategory() {
+            const name = document.getElementById('newCategory').value;
+            if(!name) return;
+            const res = await fetch('/api/categories/new', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({name: name}) });
+            if(res.ok) { window.location.reload(); } else { alert("Category already exists."); }
+        }
+        
+        async function deleteCategory(id) {
+            if(!confirm("Are you sure?")) return;
+            const res = await fetch(`/api/categories/delete/${id}`, { method: 'DELETE' });
+            if(res.ok) { document.getElementById(`cat-${id}`).remove(); }
+        }
+    </script>
+    <script>
+        window.history.pushState(null, "", window.location.href);        
+        window.onpopstate = function() {
+            window.location.href = '/logout';
+        };
+    </script>
+</body>
+</html>

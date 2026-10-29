@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Store</title>
+    
+    <!-- Solo cargamos FontAwesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Cargamos la fuente Inter de Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           RESET Y LAYOUT PRINCIPAL (AISLADO)
+           ========================================= */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            overflow: hidden; /* Evita scroll en la pantalla de login */
+        }
+
+        /* Forzamos el diseño de pantalla dividida (Izquierda / Derecha) */
+        .login-wrapper {
+            display: flex !important;
+            flex-direction: row !important;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* =========================================
+           LADO IZQUIERDO: IMAGEN Y BRANDING
+           ========================================= */
+        .login-left {
+            flex: 1;
+            /* Degradado azul oscuro sobre la imagen de la tienda de ropa */
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(37, 99, 235, 0.7)), 
+                        url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem 5%;
+            color: #ffffff;
+        }
+
+        .login-left h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+        }
+
+        .login-left p {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            max-width: 450px;
+            line-height: 1.6;
+        }
+
+        /* =========================================
+           LADO DERECHO: FORMULARIO
+           ========================================= */
+        .login-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background: #ffffff;
+        }
+
+        .login-form-box {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-form-box h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .login-form-box p.subtitle {
+            color: #64748b;
+            margin: 0 0 2.5rem 0;
+            font-size: 1rem;
+        }
+
+        /* Campos del formulario */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            outline: none;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Botón de login */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background: #1e293b;
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: #64748b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #2563eb;
+        }
+
+        /* =========================================
+           RESPONSIVE (Para celulares)
+           ========================================= */
+        @media (max-width: 900px) {
+            .login-wrapper {
+                flex-direction: column !important;
+                overflow-y: auto;
+            }
+            .login-left {
+                display: none; /* Ocultamos la imagen en móviles para ahorrar espacio */
+            }
+            .login-right {
+                min-height: 100vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- MITAD IZQUIERDA: IMAGEN -->
+        <div class="login-left">
+            <h1>Manage your<br>store with<br>confidence.</h1>
+            <p>The official administration portal for your premium clothing store. Secure, fast, and reliable.</p>
+        </div>
+        
+        <!-- MITAD DERECHA: FORMULARIO -->
+        <div class="login-right">
+            <div class="login-form-box">
+                <h2>Welcome back</h2>
+                <p class="subtitle">Please enter your details to sign in.</p>
+                
+                {% if error %}
+                <div style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #fecaca; font-size: 0.9rem;">
+                    {{ error }}
+                </div>
+                {% endif %}
+                
+                <form method="POST">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" placeholder="admin" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign in to Dashboard
+                    </button>
+                </form>
+                
+                <a href="/" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i> Return to storefront
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

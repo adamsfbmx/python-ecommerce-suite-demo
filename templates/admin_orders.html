@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Orders - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store Admin</a>
+            <div class="nav-icons">
+                <a href="/admin"><i class="fa-solid fa-plus"></i> Add Product</a>
+                <a href="/admin/categories"><i class="fa-solid fa-tags"></i> Categories</a>
+                <a href="/admin/orders" style="color:var(--primary);"><i class="fa-solid fa-box"></i> Orders</a>
+                <a href="/admin/dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a>
+                <a href="/admin/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="/logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <h2 style="margin-bottom: 2rem;">Order Management</h2>
+        {% if orders %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr><th>Order ID</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th style="text-align: right;">Actions</th></tr>
+                </thead>
+                <tbody>
+                    {% for o in orders %}
+                    <tr id="order-{{ o.id }}">
+                        <td style="font-weight: 700;">#{{ o.id }}</td>
+                        <td>{{ o.created_at.strftime('%b %d, %Y') }}</td>
+                        <td><div style="font-weight: 600;">{{ o.customer_name }}</div><div style="color: var(--text-muted); font-size: 0.85rem;">{{ o.customer_phone }}</div></td>
+                        <td style="font-weight: 700; color: var(--primary);">${{ o.total }}</td>
+                        <td><span class="badge bg-{{ o.status.lower().replace(' ', '-') }}">{{ o.status }}</span></td>
+                        <td style="text-align: right;">
+                            <a href="/admin/orders/{{ o.id }}" class="btn" style="padding:8px 16px; width:auto; font-size:0.85rem; display:inline-block;">Details</a>
+                            <button onclick="deleteOrder({{ o.id }})" class="btn" style="padding:8px 16px; width:auto; font-size:0.85rem; background:#fee2e2; color:#991b1b; border:1px solid #fecaca;">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}<p style="text-align:center; color: var(--text-muted); margin-top: 4rem;">No orders yet.</p>{% endif %}
+    </main>
+
+    <script>
+        async function deleteOrder(id) {
+            if(!confirm("Are you sure you want to delete this order? This action cannot be undone.")) return;
+            const res = await fetch(`/api/orders/delete/${id}`, { method: 'DELETE' });
+            if(res.ok) {
+                // Eliminar la fila de la tabla visualmente
+                document.getElementById(`order-${id}`).remove();
+            } else {
+                alert("Error deleting order.");
+            }
+        }
+    </script>
+</body>
+</html>

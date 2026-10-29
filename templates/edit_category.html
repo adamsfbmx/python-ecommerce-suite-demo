@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Category - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store Admin</a>
+            <div class="nav-icons"><a href="/admin/categories">← Back to Categories</a></div>
+        </div>
+    </header>
+    <main class="container" style="max-width: 600px;">
+        <h2 style="margin-bottom: 2rem;">Edit Category</h2>
+        <form method="POST" class="form-container" style="max-width: 100%;">
+            <div class="form-group"><label>Category Name</label><input name="name" class="form-control" value="{{ category.name }}" required></div>
+            <button type="submit" class="btn">Save Changes</button>
+        </form>
+    </main>
+</body>
+</html>

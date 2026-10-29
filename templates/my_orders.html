@@ -1,0 +1,8 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>My Orders - Store</title><link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"></head><body>
+<header><a href="/" class="logo">Store</a><div class="nav-icons"><a href="/customer/logout">Logout</a></div></header>
+<main class="container">
+    <h2 style="margin-bottom: 2rem;">My Orders</h2>
+    {% if orders %}
+    <div class="table-container"><table><thead><tr><th>Order ID</th><th>Date</th><th>Total</th><th>Status</th></tr></thead><tbody>{% for o in orders %}<tr><td>#{{ o.id }}</td><td>{{ o.created_at.strftime('%Y-%m-%d') }}</td><td>${{ o.total }}</td><td><span class="badge bg-{{ o.status.lower() }}">{{ o.status }}</span></td></tr>{% endfor %}</tbody></table></div>
+    {% else %}<p>You have no orders yet.</p>{% endif %}
+</main></body></html>

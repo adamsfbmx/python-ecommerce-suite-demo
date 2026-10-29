@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Dashboard - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="/" class="logo">Store Admin</a>
+            <div class="nav-icons">
+                <a href="/admin"><i class="fa-solid fa-plus"></i> Add Product</a>
+                <a href="/admin/categories"><i class="fa-solid fa-tags"></i> Categories</a>
+                <a href="/admin/orders"><i class="fa-solid fa-box"></i> Orders</a>
+                <a href="/admin/dashboard" style="color:var(--primary);"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="/admin/customers"><i class="fa-solid fa-users"></i> Customers</a>
+                <a href="/admin/settings"><i class="fa-solid fa-gear"></i> Settings</a>
+                <a href="/logout" style="color:red;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <h2 style="margin-bottom: 2rem;">Financial Overview</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem;">
+            <div style="background: white; padding: 2rem; border: 1px solid var(--border); border-radius: 8px; text-align: center;">
+                <i class="fa-solid fa-sun" style="font-size: 2rem; color: #fbbf24; margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">Today's Sales</h3>
+                <p style="font-size: 2rem; font-weight: 700; color: var(--primary);">${{ today }}</p>
+            </div>
+            <div style="background: white; padding: 2rem; border: 1px solid var(--border); border-radius: 8px; text-align: center;">
+                <i class="fa-solid fa-calendar-week" style="font-size: 2rem; color: #2563eb; margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">This Week</h3>
+                <p style="font-size: 2rem; font-weight: 700; color: var(--primary);">${{ week }}</p>
+            </div>
+            <div style="background: white; padding: 2rem; border: 1px solid var(--border); border-radius: 8px; text-align: center;">
+                <i class="fa-solid fa-calendar-days" style="font-size: 2rem; color: #10b981; margin-bottom: 1rem;"></i>
+                <h3 style="color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;">This Month</h3>
+                <p style="font-size: 2rem; font-weight: 700; color: var(--primary);">${{ month }}</p>
+            </div>
+        </div>
+        <div class="table-container">
+            <h3 style="padding: 1rem; background: #fee2e2; color: #991b1b; border-bottom: 1px solid #fecaca;"><i class="fa-solid fa-triangle-exclamation"></i> Low Stock Alerts (Less than 5 units)</h3>
+            <table>
+                <thead><tr><th>Product Name</th><th>Remaining Stock</th></tr></thead>
+                <tbody>
+                    {% for p in low_stock %}
+                    <tr><td style="font-weight: 600;">{{ p.name }}</td><td><span class="badge bg-cancelado">{{ p.stock }} units</span></td></tr>
+                    {% else %}<tr><td colspan="2" style="text-align: center; padding: 2rem;">All products have healthy stock levels.</td></tr>{% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top: 2rem; text-align: right;">
+            <a href="/admin/reports" class="btn" style="width: auto; display: inline-flex;"><i class="fa-solid fa-file-invoice-dollar"></i> Go to Accounting Reports</a>
+        </div>
+    </main>
+<script>
+        // Evita que el botón "Atrás" del navegador muestre el panel de admin cacheado
+        window.history.pushState(null, "", window.location.href);        
+        window.onpopstate = function() {
+            window.location.href = '/logout'; // Si le da atrás, lo desloguea
+        };
+    </script>
+</body>
+</html>
