@@ -18,6 +18,7 @@ DB_CONFIG = {
 }
 
 def get_db():
+    DB_CONFIG['sslmode'] = 'require' # NUEVO: Requerido por Neon
     return psycopg2.connect(**DB_CONFIG)
 
 # ==========================================
